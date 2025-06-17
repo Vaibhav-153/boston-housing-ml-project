@@ -41,3 +41,15 @@ git status
 
 # for adding any single file
 git add README.md
+
+# for adding all file 
+git add .
+
+# atlassian git tutorial for command 
+git commit -m "Commit message"
+
+#for recent last commit msg
+git log -1
+
+# for pushing in github
+git push origin main
