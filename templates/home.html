@@ -1,3 +1,201 @@
-<h1>
-    Hello world
-</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Boston Housing Price Prediction</title>
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #f8f9fa, #dfe6e9);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    .container {
+      background-color: #fff;
+      padding: 30px 40px;
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+      max-width: 1000px;
+      width: 95%;
+    }
+
+    h1 {
+      text-align: center;
+      color: #2d3436;
+      margin-bottom: 25px;
+    }
+
+    form {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    label {
+      font-weight: bold;
+      color: #333;
+      margin-bottom: 6px;
+    }
+
+    input[type="text"] {
+      padding: 10px;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      font-size: 15px;
+    }
+
+    .submit-button {
+      grid-column: 2 / 4;
+      margin-top: 20px;
+      display: flex;
+      justify-content: center;
+    }
+
+    input[type="submit"] {
+      width: 75%; /* 0.25*100 on both sides reduced */
+      padding: 12px;
+      background-color: #0984e3;
+      color: white;
+      border: none;
+      font-size: 18px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+    }
+
+    input[type="submit"]:hover {
+      background-color: #74b9ff;
+    }
+
+    .result-box {
+      grid-column: 1 / 4;
+      background-color: #dff9fb;
+      border-left: 5px solid #00b894;
+      padding: 15px;
+      border-radius: 8px;
+      font-size: 20px;
+      font-weight: bold;
+      color: #2d3436;
+      margin-top: 10px;
+      text-align: center;
+    }
+
+    @media (max-width: 768px) {
+      form {
+        grid-template-columns: 1fr;
+      }
+
+      .submit-button {
+        grid-column: 1;
+        justify-content: center;
+      }
+
+      input[type="submit"] {
+        width: 80%;
+      }
+
+      .result-box {
+        grid-column: 1;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Boston Housing Price Predictor</h1>
+    <form action="/predict" method="POST">
+      <div class="form-group">
+        <label>Crime Rate</label>
+        <input type="text" name="CRIM" required>
+      </div>
+
+      <div class="form-group">
+        <label>Residential Land Zone (%)</label>
+        <input type="text" name="ZN" required>
+      </div>
+
+      <div class="form-group">
+        <label>Business Area (%)</label>
+        <input type="text" name="INDUS" required>
+      </div>
+
+      <div class="form-group">
+        <label>Near River (1/0)</label>
+        <input type="text" name="CHAS" required>
+      </div>
+
+      <div class="form-group">
+        <label>Air Pollution (NOX)</label>
+        <input type="text" name="NOX" required>
+      </div>
+
+      <div class="form-group">
+        <label>Avg Rooms per House</label>
+        <input type="text" name="RM" required>
+      </div>
+
+      <div class="form-group">
+        <label>House Age (%)</label>
+        <input type="text" name="AGE" required>
+      </div>
+
+      <div class="form-group">
+        <label>Distance to Jobs</label>
+        <input type="text" name="DIS" required>
+      </div>
+
+      <div class="form-group">
+        <label>Highway Access</label>
+        <input type="text" name="RAD" required>
+      </div>
+
+      <div class="form-group">
+        <label>Property Tax Rate</label>
+        <input type="text" name="TAX" required>
+      </div>
+
+      <div class="form-group">
+        <label>Student-Teacher Ratio</label>
+        <input type="text" name="PTRATIO" required>
+      </div>
+
+      <div class="form-group">
+        <label>Black Residents Index (B)</label>
+        <input type="text" name="B" required>
+      </div>
+
+      <div class="form-group">
+        <label>% Lower Status Population</label>
+        <input type="text" name="LSTAT" required>
+      </div>
+
+      <!-- Predict Button -->
+      <div class="submit-button">
+        <input type="submit" value="Predict Price">
+      </div>
+
+      <!-- Prediction Result -->
+      {% if prediction_text %}
+        <div class="result-box">
+          {{ prediction_text }}
+        </div>
+      {% endif %}
+
+    </form>
+  </div>
+</body>
+</html>

@@ -1,55 +1,111 @@
 # 🏠 Boston Housing Price Prediction - ML Project
 
-This is an end-to-end machine learning project to predict Boston Housing Prices using regression models. The dataset includes 13 features affecting housing prices in Boston.
+This is an **end-to-end Machine Learning project** to predict **Boston housing prices** using regression models. The project uses the Boston Housing dataset with 13 important features influencing home prices.
 
 ---
 
-## 🔧 Software and Tools Requirements
+## 📁 Project Structure
 
-| Tool | Link |
-|------|------|
-| GitHub | [https://github.com](https://github.com) |
-| VS Code | [https://code.visualstudio.com/](https://code.visualstudio.com/) |
-| Heroku | [https://heroku.com](https://heroku.com) |
-| Git CLI | [https://git-scm.com/downloads/win](https://git-scm.com/downloads/win) |
-| Anaconda (recommended) | [https://www.anaconda.com/](https://www.anaconda.com/) |
+```
+boston-price-predictor/
+├── static/                # CSS & static assets
+├── templates/             # HTML templates (home.html)
+├── app.py                 # Flask backend
+├── lr_model.pkl           # Trained Linear Regression model
+├── scaling.pkl            # Standard Scaler object
+├── requirements.txt       # Python dependencies
+└── README.md              # Project documentation
+```
 
 ---
 
-## 🛠️ Create and Activate Conda Environment
+## 🔧 Software & Tools Requirements
+
+| Tool     | Purpose                      | Link                                                    |
+| -------- | ---------------------------- | ------------------------------------------------------- |
+| GitHub   | Version Control & Hosting    | [github.com](https://github.com)                        |
+| VS Code  | Code Editor                  | [code.visualstudio.com](https://code.visualstudio.com/) |
+| Heroku   | App Deployment               | [heroku.com](https://heroku.com)                        |
+| Git CLI  | Git Command Line             | [git-scm.com](https://git-scm.com/downloads)            |
+| Anaconda | Python + Environment Manager | [anaconda.com](https://www.anaconda.com/)               |
+
+---
+
+## 🛠️ Setup Instructions (Using Conda)
+
+### ✅ Step 1: Create & Activate Conda Environment
 
 ```bash
-# Create environment with Python 3.12
+# Create a new environment with Python 3.12
 conda create -p venv python=3.12 -y
 
-# Activate environment
+# Activate the environment
 conda activate ./venv
+```
 
-# for installing the require libraries 
+---
+
+### ✅ Step 2: Install Project Dependencies
+
+```bash
+# Install required libraries
 pip install -r requirements.txt
+```
 
-# command for configration
+---
+
+## 🌐 Git & GitHub Commands
+
+### ✅ Git Configuration
+
+```bash
+# Set your name and email (configure Git)
 git config --global user.name "Vaibhav Admane"
-
-#for check
-git config --global user.name
-
 git config --global user.email "your-email@example.com"
 
-# for checking the status of git file 
+# Check Git configuration
+git config --global user.name
+git config --global user.email
+```
+
+### ✅ Git Workflow
+
+```bash
+# Check current changes
 git status
 
-# for adding any single file
+# Add a specific file
 git add README.md
 
-# for adding all file 
+# Add all files
 git add .
 
-# atlassian git tutorial for command 
-git commit -m "Commit message"
+# Commit changes
+git commit -m "Initial commit"
 
-#for recent last commit msg
+# View latest commit
 git log -1
 
-# for pushing in github
+# Push changes to GitHub
 git push origin main
+```
+
+---
+
+## 🚀 Run the Project
+
+```bash
+# Run Flask app
+python app.py
+```
+
+Then open your browser and go to:
+
+```
+http://127.0.0.1:5000/
+```
+
+---
+
+> 📘 Tip: Learn more from the [Atlassian Git Tutorial](https://www.atlassian.com/git/tutorials)
+
