@@ -1,0 +1,10 @@
+services:
+  - type: web
+    name: boston-housing-regression-practice
+    runtime: python
+    buildCommand: pip install -r requirements.txt && python scripts/download_data.py && python -m src.train
+    startCommand: gunicorn app:app
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.7

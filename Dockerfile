@@ -1,16 +1,10 @@
 FROM python:3.12-slim
-
-# Set working directory
 WORKDIR /app
-
-# Copy all files into the container
-COPY . .
-
-# Install dependencies
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
-
-# Expose the port Render will assign
+COPY . .
+RUN python scripts/download_data.py && python -m src.train
 EXPOSE 8000
-
-# Start the app using Gunicorn (Render sets PORT env variable)
-CMD gunicorn --workers=4 --bind 0.0.0.0:$PORT app:app
+CMD ["sh", "-c", "gunicorn --workers=2 --bind 0.0.0.0:${PORT:-8000} app:app"]

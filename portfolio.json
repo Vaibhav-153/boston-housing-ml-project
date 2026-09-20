@@ -1,0 +1,17 @@
+{
+  "title": "Boston Housing Regression",
+  "role": "Machine Learning Engineering Practice",
+  "category": "Practice & Domain Projects",
+  "summary": "Leakage-safe regression workflow with baselines, cross-validation, sklearn Pipelines, Flask API, tests, CI, and Docker.",
+  "technologies": [
+    "Python",
+    "pandas",
+    "scikit-learn",
+    "Flask",
+    "Pytest",
+    "Ruff",
+    "GitHub Actions",
+    "Docker"
+  ],
+  "github": "https://github.com/Vaibhav-153/boston-housing-ml-project"
+}
