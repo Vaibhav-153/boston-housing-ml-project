@@ -1,104 +1,148 @@
-# Boston Housing Regression - End-to-End ML Practice Project
+# Boston Housing Regression
 
-An end-to-end regression project that demonstrates a reproducible machine-learning workflow: data validation, leakage-safe preprocessing, baseline comparison, cross-validated model selection, held-out evaluation, model serialization, Flask inference, tests, CI, and Docker deployment.
+This project trains and serves regression models on the historical Boston Housing dataset. The main goal is to practice a clean machine-learning workflow: reproducible data loading, leakage-safe preprocessing, model comparison, held-out evaluation, model serialization, API inference, testing, CI, and Docker deployment.
 
-The project uses the historical Boston Housing dataset strictly as an **ML engineering practice dataset** rather than as a modern real-estate valuation product.
+This is a learning project. The dataset is historical and should not be used as a modern property-pricing or decision-making system.
 
-## Technology stack
+## Problem statement
 
-- **Python / pandas / NumPy**
-- **scikit-learn**
-- **Flask + Gunicorn**
-- **Joblib**
-- **Pytest**
-- **Ruff**
-- **GitHub Actions**
-- **Docker**
+Given neighborhood-level housing attributes, predict `MEDV`, the historical median value of owner-occupied homes in thousands of US dollars.
 
-## ML workflow
+The project compares a simple baseline with linear and nonlinear regression models, selects the model with the lowest cross-validated RMSE on the training split, and evaluates the selected model once on a held-out test set.
+
+## Features
+
+- reproducible dataset download and validation;
+- fixed 80/20 train/test split;
+- median imputation inside sklearn Pipelines;
+- feature scaling for linear models;
+- baseline comparison with `DummyRegressor`;
+- 5-fold cross-validation on the training split only;
+- Linear Regression, Ridge, and Random Forest candidates;
+- MAE, RMSE, and R2 evaluation;
+- one serialized preprocessing + model pipeline;
+- Flask web form and JSON prediction API;
+- input validation for missing, extra, non-numeric, and non-finite values;
+- Pytest tests and Ruff linting;
+- GitHub Actions CI;
+- Render and Docker deployment files.
+
+## Dataset
+
+The project uses the historical Boston Housing dataset from StatLib. The download script fetches the same numeric dataset distributed by Keras and verifies the downloaded file with SHA-256 before converting it to `data/HousingData.csv`.
+
+The original dataset contains 506 rows, 13 input attributes, and the `MEDV` target. The model intentionally excludes the historical `B` variable because it was constructed from racial-composition information. The remaining 12 variables are used for training.
+
+The dataset is small, old, and geographically limited. It is useful for regression practice, not for current housing valuation.
+
+## Technologies used
+
+- Python
+- pandas and NumPy
+- scikit-learn
+- Flask and Gunicorn
+- Joblib
+- Pytest
+- Ruff
+- GitHub Actions
+- Docker
+- Render
+
+## Project structure
 
 ```text
-HousingData.csv
-      |
-      v
-Schema validation
-      |
-      v
-Train / test split
-      |
-      v
-Training-only preprocessing pipeline
-      |
-      +--> median imputation
-      +--> scaling where required
-      |
-      v
-5-fold CV model comparison
-      |
-      +--> Dummy median baseline
-      +--> Linear Regression
-      +--> Ridge Regression
-      +--> Random Forest Regression
-      |
-      v
-Select lowest CV RMSE
-      |
-      v
-Final fit on training data
-      |
-      v
-Held-out test evaluation
-      |
-      +--> MAE
-      +--> RMSE
-      +--> R2
-      |
-      v
-Serialized sklearn Pipeline
-      |
-      v
-Flask API / HTML form
+.
+├── .github/
+│   └── workflows/
+│       └── ci.yml
+├── artifacts/                 # generated model files
+├── assets/                    # repository images/static project assets
+├── data/                      # downloaded dataset
+├── docs/
+│   ├── INTERVIEW_GUIDE.md
+│   ├── MODEL_CARD.md
+│   └── PROJECT_DOCUMENTATION.md
+├── reports/                   # generated evaluation metrics
+├── scripts/
+│   └── download_data.py
+├── src/
+│   ├── __init__.py
+│   ├── config.py
+│   └── train.py
+├── templates/
+│   └── home.html
+├── tests/
+│   ├── test_app.py
+│   ├── test_download_data.py
+│   └── test_training.py
+├── .dockerignore
+├── .gitignore
+├── app.py
+├── Dockerfile
+├── LICENSE
+├── Makefile
+├── portfolio.json
+├── Procfile
+├── pyproject.toml
+├── render.yaml
+├── requirements-dev.txt
+├── requirements.txt
+└── README.md
 ```
 
-## Methodology improvements implemented
+Generated model, metadata, dataset, and metric files are ignored by Git so they can be reproduced from the source code.
 
-### Leakage-safe preprocessing
+## Installation
 
-Imputation and scaling live inside sklearn Pipelines. Preprocessing parameters are learned only from training folds during cross-validation and from the training split during final fitting.
+### 1. Clone the repository
 
-### No global IQR deletion
+```bash
+git clone https://github.com/Vaibhav-153/boston-housing-ml-project.git
+cd boston-housing-ml-project
+```
 
-The implementation does not repeatedly delete observations using thresholds computed from the entire dataset. Rare but valid observations remain in evaluation unless they violate an explicit data-quality rule.
+### 2. Create a virtual environment
 
-### Baseline comparison
-
-A median `DummyRegressor` provides a naive reference. Learned models are useful only when they outperform this baseline under the same validation design.
-
-### Model selection
-
-Candidate models are ranked by mean 5-fold cross-validated RMSE using only the training split. The held-out test set is evaluated once after model selection.
-
-### Single inference artifact
-
-The complete preprocessing + estimator pipeline is serialized as one artifact. The Flask app therefore cannot accidentally use a scaler or feature order different from training.
-
-## Responsible feature handling
-
-The historical Boston dataset includes an original variable conventionally named `B`, constructed from racial-composition information. This implementation **excludes `B` from the model feature set** and documents the dataset's ethical limitations in [`docs/MODEL_CARD.md`](docs/MODEL_CARD.md).
-
-## Reproducible execution
+Windows:
 
 ```bash
 python -m venv .venv
-python -m pip install -r requirements-dev.txt
-python scripts/download_data.py
-python -m src.train
-pytest -q
-ruff check .
-python app.py
+.venv\Scripts\activate
 ```
 
-Training writes:
+Linux/macOS:
+
+```bash
+python -m venv .venv
+source .venv/bin/activate
+```
+
+### 3. Install dependencies
+
+```bash
+python -m pip install --upgrade pip
+python -m pip install -r requirements-dev.txt
+```
+
+## Download the dataset
+
+```bash
+python scripts/download_data.py
+```
+
+The script creates:
+
+```text
+data/HousingData.csv
+```
+
+## Train the model
+
+```bash
+python -m src.train
+```
+
+Training creates:
 
 ```text
 artifacts/model.joblib
@@ -106,22 +150,68 @@ artifacts/model_metadata.json
 reports/metrics.json
 ```
 
-## API
+## Model and evaluation method
 
-### Health check
+The split and model-selection process is fixed so repeated runs use the same evaluation design:
 
-```http
-GET /health
+1. Split the dataset into 80% training data and 20% test data using `random_state=42`.
+2. Keep the test set untouched during model selection.
+3. Compare four candidates with shuffled 5-fold cross-validation on the training split.
+4. Select the candidate with the lowest mean CV RMSE.
+5. Fit that pipeline on the full training split.
+6. Evaluate it once on the held-out test set using MAE, RMSE, and R2.
+
+The candidate set is intentionally small:
+
+| Model | Preprocessing |
+| --- | --- |
+| Dummy median | Median imputation |
+| Linear Regression | Median imputation + standardization |
+| Ridge Regression | Median imputation + standardization |
+| Random Forest | Median imputation |
+
+Preprocessing is part of each sklearn `Pipeline`, so imputation and scaling are fitted only on training data during cross-validation and final training.
+
+## Results
+
+The training command prints the selected model, cross-validation RMSE for every candidate, and the held-out MAE, RMSE, and R2. The same values are saved to `reports/metrics.json`.
+
+Generated reports are intentionally ignored by Git, so this README does not claim a score that cannot be verified from the repository itself. Run the commands below to reproduce the current result from the pinned dataset source and fixed random state:
+
+```bash
+python scripts/download_data.py
+python -m src.train
+cat reports/metrics.json
 ```
 
-### Prediction
+This keeps the reported result tied to the exact code and dataset used for the run.
+
+## Run the web app
+
+After training:
+
+```bash
+python app.py
+```
+
+Open:
+
+```text
+http://127.0.0.1:5000
+```
+
+The home page provides a simple prediction form.
+
+## Prediction API
+
+Endpoint:
 
 ```http
 POST /predict_api
 Content-Type: application/json
 ```
 
-Example:
+Example request:
 
 ```json
 {
@@ -142,7 +232,7 @@ Example:
 }
 ```
 
-Response:
+Example response:
 
 ```json
 {
@@ -150,83 +240,72 @@ Response:
 }
 ```
 
-## Input validation
+## Health check
 
-The inference service rejects:
+```http
+GET /health
+```
 
-- missing features;
-- unexpected fields;
-- non-numeric values;
-- NaN/infinite values;
-- invalid `CHAS` values;
-- requests made before a model artifact is available.
+The endpoint returns HTTP `200` only when the model is loaded. If the model artifact is missing, it returns HTTP `503` with `model_ready: false`. This prevents a deployment from reporting itself healthy when predictions cannot run.
 
-## Automated tests
+## Tests and linting
 
-The test suite covers:
+Run the complete local check:
 
-- health endpoint;
-- valid API prediction;
-- missing feature rejection;
-- unexpected feature rejection;
-- invalid `CHAS` rejection;
-- training-pipeline construction.
+```bash
+make check
+```
 
-CI runs tests and Ruff on every push and pull request.
+Or run the commands separately:
+
+```bash
+ruff check .
+python -m pytest -q
+```
+
+CI runs the same lint and test checks on pushes and pull requests.
 
 ## Docker
 
+Build the image:
+
 ```bash
 docker build -t boston-housing-regression .
+```
+
+The Docker build downloads the dataset and trains the model so the resulting image is ready to serve predictions.
+
+Run it locally:
+
+```bash
 docker run --rm -p 8000:8000 boston-housing-regression
 ```
 
-## Repository structure
+Then open:
 
 ```text
-.
-├── README.md
-├── LICENSE
-├── app.py
-├── requirements.txt
-├── requirements-dev.txt
-├── Dockerfile
-├── Procfile
-├── render.yaml
-├── portfolio.json
-├── scripts/
-│   └── download_data.py
-├── src/
-│   ├── __init__.py
-│   ├── config.py
-│   └── train.py
-├── templates/
-│   └── home.html
-├── tests/
-│   ├── test_app.py
-│   └── test_training.py
-├── artifacts/
-├── reports/
-└── docs/
-    ├── PROJECT_DOCUMENTATION.md
-    ├── MODEL_CARD.md
-    └── INTERVIEW_GUIDE.md
+http://127.0.0.1:8000
 ```
+
+The container uses `PORT` when the deployment platform provides it and falls back to port `8000` for local runs.
 
 ## Limitations
 
-- The dataset is historical and small.
-- A random split does not establish temporal or geographic generalization.
-- The project is not a modern property-pricing model.
-- Predictions are educational outputs, not appraisal, lending, investment, or policy advice.
+- The dataset contains only 506 historical observations.
+- It describes Boston-area data from the 1970s and does not represent current housing markets.
+- A random train/test split does not test generalization across time or geography.
+- The candidate model set is deliberately small and does not include extensive hyperparameter tuning.
+- The project is for ML engineering practice, not appraisal, lending, investment, or housing-policy decisions.
 
-## Portfolio role
+## Future improvements
 
-**Machine Learning Engineering practice project**
-
-The main value of the repository is the end-to-end engineering workflow around a regression problem.
+- add a small, documented hyperparameter search while keeping the held-out test set untouched;
+- report cross-validation standard deviation in addition to mean RMSE;
+- add model explainability for the final estimator where it is appropriate;
+- add an integration test that builds and starts the Docker image in CI;
+- move to a more suitable modern housing dataset for a production-style version of the project.
 
 ## Author
 
-**Vaibhav Admane**  
-GitHub: [Vaibhav-153](https://github.com/Vaibhav-153)
+Vaibhav Admane  
+GitHub: https://github.com/Vaibhav-153
