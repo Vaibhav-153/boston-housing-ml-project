@@ -34,7 +34,6 @@ def parse_payload(data: dict[str, Any], features: list[str]) -> dict[str, float]
         raise ValueError(f"Unexpected features: {extra}")
 
     parsed: dict[str, float] = {}
-
     for feature in features:
         try:
             value = float(data[feature])
@@ -75,23 +74,26 @@ def create_app(
 
     @app.get("/health")
     def health():
-        return jsonify(
-            {
-                "status": "ok" if model is not None else "model_not_trained",
-                "model_ready": model is not None,
-            }
+        model_ready = model is not None
+        return (
+            jsonify(
+                {
+                    "status": "ok" if model_ready else "model_not_trained",
+                    "model_ready": model_ready,
+                }
+            ),
+            200 if model_ready else 503,
         )
 
     @app.post("/predict_api")
     def predict_api():
         if model is None:
             return (
-                jsonify({"error": ("Model artifact is unavailable. Run python -m src.train.")}),
+                jsonify({"error": "Model artifact is unavailable. Run python -m src.train."}),
                 503,
             )
 
         payload = request.get_json(silent=True)
-
         if not isinstance(payload, dict) or not isinstance(payload.get("data"), dict):
             return jsonify({"error": "Expected JSON body: {'data': {...}}"}), 400
 
@@ -102,7 +104,6 @@ def create_app(
 
         frame = pd.DataFrame([parsed], columns=features)
         prediction = float(model.predict(frame)[0])
-
         return jsonify(
             {
                 "predicted_median_value_thousands_usd": round(
@@ -140,7 +141,6 @@ def create_app(
 
         frame = pd.DataFrame([parsed], columns=features)
         prediction = float(model.predict(frame)[0])
-
         prediction_text = f"Predicted historical MEDV value: {prediction:.2f} ($1,000 units)"
 
         return render_template(
