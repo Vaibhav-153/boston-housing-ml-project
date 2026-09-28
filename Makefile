@@ -1,4 +1,4 @@
-.PHONY: setup data train test run
+.PHONY: setup data train lint test check run
 
 setup:
 	python -m pip install -r requirements-dev.txt
@@ -9,9 +9,13 @@ data:
 train:
 	python -m src.train
 
-test:
-	pytest -q
+lint:
 	ruff check .
+
+test:
+	python -m pytest -q
+
+check: lint test
 
 run:
 	python app.py
